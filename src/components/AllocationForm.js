@@ -1,19 +1,15 @@
 import React, { useContext, useState } from 'react';
 import { AppContext } from '../context/AppContext';
+import Currency from './Currency';
 
 const AllocationForm = (props) =>{
-    const{ dispatch, remaining } = useContext(AppContext);
+    const{ dispatch, remaining, currency } = useContext(AppContext);
 
     const [name, setName] = useState('');
     const [action, setAction] = useState('');
     const [cost, setCost] = useState('');
 
 const submitEvent = () => {
-            if(cost > remaining) {
-                alert("The value cannot exceed remaining funds  £"+remaining);
-                setCost("");
-                return;
-            }
         const expense = {
             name: name,
             cost: parseInt(cost),
@@ -23,12 +19,18 @@ const submitEvent = () => {
                 type: 'RED_EXPENSE',
                 payload: expense,
             });
-        } else {
-                dispatch({
-                    type: 'ADD_EXPENSE',
-                    payload: expense,
-                });
+        } 
+        else {
+            if(cost > remaining) {
+                alert("The value cannot exceed remaining funds  £"+remaining);
+                setCost("");
+                return;
             }
+            dispatch({
+                type: 'ADD_EXPENSE',
+                payload: expense,
+            });
+        }
     };
 
     return (
@@ -54,12 +56,15 @@ const submitEvent = () => {
                         <option defaultValue value="Add" name="Add">Add</option>
                         <option value="Reduce" name="Reduce">Reduce</option>
                     </select>
+                    <div className="input-group-prepend" style={{ marginLeft: '2rem' }}>
+                        <label className="input-group-text" htmlFor="inputGroupSelect01">{currency}</label>
+                    </div>
                     <input
                         required='required'
                         type='number'
                         id='cost'
                         value={cost}
-                        style={{ marginLeft: '2rem', size: 10}}
+                        style={{ size: 10}}
                         onChange={(event) => setCost(event.target.value)}>
                     </input>
                     <button className="btn btn-primary" onClick={submitEvent} style={{ marginLeft: '2rem' }}>
